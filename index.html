@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Météo & vent du parcours</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
@@ -79,36 +79,21 @@ label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
 #tour-prog{font-size:11px;color:var(--muted)}
 #tour button{padding:6px 12px;font-size:13px}
 #settingsbtn{display:none}
-#hud-toggle{display:none}
 @media (max-width:640px){
-  #hud{width:165px;padding:9px 11px;top:calc(8px + env(safe-area-inset-top));left:calc(8px + env(safe-area-inset-left))}
-  #hud #clock{font-size:21px}
+  #hud{width:158px;padding:9px 11px}
+  #hud #clock{font-size:20px}
   #hud .big{font-size:17px}
   #hud .stat{font-size:12px;gap:8px}
-  #hud .stat b{font-size:13px;max-width:88px}
-  #hud #sky{max-width:88px}
+  #hud .stat b{font-size:13px;max-width:84px}
+  #hud #sky{max-width:84px}
   #conf .cstars{display:none}
   #sunarc{height:52px}
-  #hud h1{padding-right:28px}
-  /* HUD repliable : bouton détails */
-  #hud-toggle{display:flex;position:absolute;top:8px;right:8px;width:28px;height:28px;padding:0;align-items:center;justify-content:center;background:var(--btn);border:1px solid var(--line);color:var(--txt);border-radius:8px}
-  #hud-toggle svg{display:block;transition:transform .25s ease}
-  body.m-hud-collapsed #hud-toggle svg{transform:rotate(180deg)}
-  body.m-hud-collapsed #hud .hud-extra{display:none}
-  body.m-hud-collapsed #hud{padding-bottom:11px}
-  #settingsbtn{display:flex;position:absolute;top:calc(8px + env(safe-area-inset-top));right:calc(8px + env(safe-area-inset-right));z-index:600;width:46px;height:44px;padding:0;align-items:center;justify-content:center}
-  #settings{display:none;top:calc(60px + env(safe-area-inset-top));right:calc(8px + env(safe-area-inset-right));left:calc(8px + env(safe-area-inset-left));width:auto;max-height:68vh;overflow:auto}
+  #settingsbtn{display:flex;position:absolute;top:14px;right:14px;z-index:600;width:46px;height:42px;padding:0;align-items:center;justify-content:center}
+  #settings{display:none;top:62px;right:8px;left:8px;width:auto;max-height:72vh;overflow:auto}
   body.m-settings-open #settings{display:block}
-  #ctrl{left:calc(8px + env(safe-area-inset-left));right:calc(8px + env(safe-area-inset-right));bottom:8px;gap:8px;padding:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+  #ctrl{left:8px;right:8px;bottom:8px;gap:8px;padding:10px}
   #seekwrap{order:9;flex-basis:100%;min-width:0}
-  #profile{height:56px}
-  #play,#reset,#viewtoggle{min-height:44px;min-width:44px}
-  .seg button{padding:10px 12px}
-  .leaflet-bottom.leaflet-right{bottom:calc(138px + env(safe-area-inset-bottom))}
-  #alertinfo{max-width:calc(100vw - 24px);white-space:normal}
-  #dropcard{padding:36px 22px}
-  #dropcard h2{font-size:19px}
-  #dropcard .ico{font-size:40px}
+  .leaflet-bottom.leaflet-right{bottom:128px}
 }
 #alertinfo{top:14px;left:50%;transform:translateX(-50%);z-index:560;display:flex;align-items:center;gap:10px;padding:9px 14px;font-size:13px;white-space:nowrap}
 #alertinfo .ai-ico{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -157,23 +142,22 @@ label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
 </div>
 
 <div id="hud" class="panel hidden">
-  <button id="hud-toggle" class="sec" aria-label="Plus / moins de détails"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
   <h1 id="title">Parcours</h1>
-  <div class="sub hud-extra" id="route-info">…</div>
+  <div class="sub" id="route-info">…</div>
   <div id="clock">--:--</div>
-  <div class="stat hud-extra"><span>Temps écoulé</span><b id="elapsed">0h00</b></div>
-  <div class="stat hud-extra"><span>Distance</span><b id="dist">0 / 0 km</b></div>
-  <div class="stat hud-extra"><span>Altitude</span><b id="alt">… m</b></div>
+  <div class="stat"><span>Temps écoulé</span><b id="elapsed">0h00</b></div>
+  <div class="stat"><span>Distance</span><b id="dist">0 / 0 km</b></div>
+  <div class="stat"><span>Altitude</span><b id="alt">… m</b></div>
   <div class="stat"><span>Température</span><b id="temp" class="big">…</b></div>
   <div class="windbox">
     <div class="arrow"><svg id="warrow" width="22" height="22" viewBox="0 0 22 22"><path d="M11 2 L15 18 L11 14 L7 18 Z" fill="currentColor"/></svg></div>
     <div><div style="font-size:11px;color:var(--muted)">Vent</div><b id="wind-val" class="big">… km/h</b><div id="gust" style="font-size:11px;color:var(--muted)"></div></div>
   </div>
-  <div class="stat hud-extra" style="margin-top:6px"><span>Météo</span><b id="sky">…</b></div>
-  <div class="stat hud-extra"><span>Fiabilité météo</span><b id="conf">…</b></div>
-  <div class="hud-extra" style="font-size:11px;color:var(--muted);margin-top:9px;margin-bottom:4px">Luminosité</div>
-  <canvas id="sunarc" class="hud-extra"></canvas>
-  <div id="src" class="hud-extra"></div>
+  <div class="stat" style="margin-top:6px"><span>Météo</span><b id="sky">…</b></div>
+  <div class="stat"><span>Fiabilité météo</span><b id="conf">…</b></div>
+  <div style="font-size:11px;color:var(--muted);margin-top:9px;margin-bottom:4px">Luminosité</div>
+  <canvas id="sunarc"></canvas>
+  <div id="src"></div>
 </div>
 
 <div id="settings" class="panel hidden">
@@ -669,7 +653,6 @@ function startApp(parsed){
   buildWP(); computeTiming(); loadWeather(); render();
   $('drop').classList.add('hidden');
   ['hud','settings','ctrl','settingsbtn'].forEach(id=>$(id).classList.remove('hidden'));
-  if(window.matchMedia('(max-width:640px)').matches) document.body.classList.add('m-hud-collapsed');
   setTimeout(()=>{map.invalidateSize();render();},220);
   try{ if(!localStorage.getItem('gpxmap_onboarded')) setTimeout(startTour,750); }catch(e){}
   save();
@@ -687,7 +670,6 @@ $('pick').onclick=()=>$('file').click();
 $('file').onchange=e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); };
 $('newgpx').onclick=()=>{ started=false; setPlaying(false); forget(); document.body.classList.remove('m-settings-open'); $('drop').classList.remove('hidden'); ['hud','settings','ctrl','settingsbtn'].forEach(id=>$(id).classList.add('hidden')); $('file').value=''; };
 $('settingsbtn').onclick=()=>document.body.classList.toggle('m-settings-open');
-$('hud-toggle').onclick=()=>{ document.body.classList.toggle('m-hud-collapsed'); if(started){ setTimeout(()=>{ if(map)map.invalidateSize(); drawProfile(); },60); } };
 const card=$('dropcard');
 ['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault(); if(!$('drop').classList.contains('hidden'))card.classList.add('hot');}));
 ['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault(); card.classList.remove('hot');}));
@@ -761,5 +743,6 @@ addEventListener('resize',()=>{ if(!$('tour').classList.contains('hidden')) tour
   }catch(e){}
 })();
 </script>
+<script data-goatcounter="https://meteo-parcours.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
