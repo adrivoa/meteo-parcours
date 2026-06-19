@@ -14,7 +14,7 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Seg
 #map{position:absolute;inset:0;background:var(--bg)}
 #nightlayer{position:absolute;inset:0;z-index:350;pointer-events:none;background:transparent;transition:background .6s linear}
 #wind{position:absolute;inset:0;pointer-events:none;z-index:400}
-.leaflet-bottom.leaflet-right{bottom:86px}
+.leaflet-bottom.leaflet-right{bottom:112px}
 .panel{position:absolute;z-index:500;background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:0 8px 30px #0008}
 #hud{top:14px;left:14px;width:250px}
 #hud .stat b{text-align:right;max-width:165px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -45,10 +45,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 #play svg,#reset svg{display:block}
 #reset{width:46px;height:40px;padding:0;font-size:0;display:flex;align-items:center;justify-content:center}
 #seekwrap{flex:1;min-width:180px;display:flex;align-items:center}
-#profile{flex:1;height:46px;cursor:pointer;background:transparent;border:none}
-#viewtoggle{padding:7px 10px;display:flex;align-items:center}
-#viewtoggle svg{display:block}
-#viewtoggle.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+#profile{flex:1;height:56px;cursor:pointer;background:transparent;border:none}
 .seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex-shrink:0}
 .seg button{background:var(--field);border:0;border-radius:0;padding:8px 12px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer}
 .seg button.on{background:var(--accent);color:#fff}
@@ -62,7 +59,18 @@ label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
 .legend{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:6px}
 #sunarc{width:100%;height:74px;border-radius:10px;display:block}
 .grad{height:10px;flex:1;border-radius:5px;background:linear-gradient(90deg,#3b82f6,#22d3ee,#22c55e,#eab308,#f97316,#ef4444)}
-#src{font-size:10px;color:var(--muted);margin-top:8px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#src{font-size:10px;color:var(--muted);margin-top:8px;line-height:1.35}
+#src b{color:var(--txt);font-weight:600}
+#mapstyle{display:flex;gap:10px;margin-top:4px}
+#mapstyle button{flex:1;padding:0;border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+#mapstyle .thumb{width:100%;height:50px;border-radius:10px;border:2px solid var(--line);background:var(--field) center/cover no-repeat;box-shadow:0 1px 4px #0004}
+#mapstyle button.on .thumb{border-color:var(--accent)}
+#mapstyle .mlbl{font-size:11px;font-weight:600;color:var(--muted)}
+#mapstyle button.on .mlbl{color:var(--txt)}
+.leaflet-bar{border:1px solid var(--line)!important;box-shadow:0 2px 8px #0005}
+.leaflet-bar a,.leaflet-bar a:hover{background:var(--btn);color:var(--txt);border-bottom:1px solid var(--line)}
+.leaflet-bar a:hover{background:var(--field)}
+.leaflet-bar a.leaflet-disabled{background:var(--panel);color:var(--muted);opacity:.6}
 .team-mark{background:var(--accent);width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 14px var(--accent);animation:pulse 1.6s infinite}
 .leaflet-tooltip.team-tip{background:var(--panel);border:1px solid var(--accent);color:var(--txt);font-weight:700;font-size:14px;border-radius:9px;padding:3px 8px;box-shadow:0 3px 10px #0006}
 .leaflet-tooltip.team-tip::before{display:none}
@@ -94,7 +102,7 @@ label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
   body.m-settings-open #settings{display:block}
   #ctrl{left:8px;right:8px;bottom:8px;gap:8px;padding:10px}
   #seekwrap{order:9;flex-basis:100%;min-width:0}
-  .leaflet-bottom.leaflet-right{bottom:128px}
+  .leaflet-bottom.leaflet-right{bottom:150px}
 }
 #alertinfo{top:14px;left:50%;transform:translateX(-50%);z-index:560;display:flex;align-items:center;gap:10px;padding:9px 14px;font-size:13px;white-space:nowrap}
 #alertinfo .ai-ico{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -152,7 +160,7 @@ label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
   <div class="stat"><span>Température</span><b id="temp" class="big">…</b></div>
   <div class="windbox">
     <div class="arrow"><svg id="warrow" width="22" height="22" viewBox="0 0 22 22"><path d="M11 2 L15 18 L11 14 L7 18 Z" fill="currentColor"/></svg></div>
-    <div><div style="font-size:11px;color:var(--muted)">Vent</div><b id="wind-val" class="big">… km/h</b><div id="gust" style="font-size:11px;color:var(--muted)"></div></div>
+    <div><div style="font-size:11px;color:var(--muted)">Vent <b id="wind-dir" style="color:var(--txt)"></b></div><b id="wind-val" class="big">… km/h</b><div id="gust" style="font-size:11px;color:var(--muted)"></div></div>
   </div>
   <div class="stat" style="margin-top:6px"><span>Météo</span><b id="sky">…</b></div>
   <div class="stat"><span>Fiabilité météo</span><b id="conf">…</b></div>
@@ -170,10 +178,14 @@ label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
     <div><label>Plat</label><div class="uin"><input type="number" id="vFlat" value="22" step="0.5" min="3"><span class="u">km/h</span></div></div>
     <div><label>Descente</label><div class="uin"><input type="number" id="vDown" value="38" step="0.5" min="3"><span class="u">km/h</span></div></div>
   </div>
-  <button class="sec" id="apply" style="width:100%">Recalculer</button>
   <div id="eta" style="font-size:11px;color:var(--muted);margin-top:8px;white-space:nowrap"></div>
   <button class="sec linkbtn" id="newgpx" style="width:100%;margin-top:8px">+ Charger un autre GPX</button>
-  <button class="sec" id="replaytour" style="width:100%;margin-top:6px;font-size:11px">Revoir le tutoriel</button>
+  <label style="margin-top:10px">Fond de carte</label>
+  <div id="mapstyle">
+    <button data-m="plan" class="on"><span class="thumb"></span><span class="mlbl">Plan</span></button>
+    <button data-m="satellite"><span class="thumb"></span><span class="mlbl">Satellite</span></button>
+    <button data-m="relief"><span class="thumb"></span><span class="mlbl">Relief</span></button>
+  </div>
 </div>
 
 <div id="ctrl" class="panel hidden">
@@ -182,12 +194,7 @@ label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
   <div id="seekwrap">
     <canvas id="profile" title="Cliquez ou glissez pour vous déplacer"></canvas>
   </div>
-  <button class="sec" id="viewtoggle" title="Barre / profil de l'étape"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M2 19 L8 9 L12 14 L17 6 L22 19 Z"/></svg></button>
-  <div class="seg" id="pbspeed" title="Vitesse de lecture">
-    <button data-v="180">Lent</button>
-    <button data-v="90" class="on">Moyen</button>
-    <button data-v="20">Rapide</button>
-  </div>
+  <button id="pbspeed" title="Vitesse de lecture (clique pour changer)" data-mult="1" style="min-width:52px;font-weight:800;font-size:15px">x1</button>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -199,6 +206,8 @@ function tempColor(t){const s=[[-5,'#3b82f6'],[5,'#22d3ee'],[12,'#22c55e'],[20,'
 function lerpAngle(a,b,f){let d=((b-a+540)%360)-180;return (a+d*f+360)%360;}
 function fmtDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function fmtDur(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h+'h'+String(m).padStart(2,'0');}
+// point cardinal d'où vient le vent (rose à 16 directions, abréviations FR : O = Ouest)
+function windCard(d){const c=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];return c[Math.round(((d%360)+360)%360/22.5)%16];}
 const $=id=>document.getElementById(id);
 
 // solar elevation (deg) for a Date + position, via UTC
@@ -302,7 +311,7 @@ let ROUTE,cum,TOTAL_D,cumTime,TOTAL_T,map,team,WP,tempMarkers=[],weatherReady=fa
 const STORE='gpxmap_session_v1';
 function save(){ if(!started||!ROUTE)return; try{localStorage.setItem(STORE,JSON.stringify({route:ROUTE,name:currentName,settings:{start:$('start').value,vUp:$('vUp').value,vFlat:$('vFlat').value,vDown:$('vDown').value,pbSec:pbSec}}));}catch(e){} }
 function forget(){ try{localStorage.removeItem(STORE);}catch(e){} }
-let particles=[],curWind={ws:0,wd:0},simT=0,playing=false,last=0,started=false,pbSec=90,profileMode=false,windLight=true,simDate=null;
+let particles=[],curWind={ws:0,wd:0},simT=0,playing=false,last=0,started=false,pbSec=90,profileMode=true,windLight=true,simDate=null;
 
 function computeTiming(){
   const vUp=+$('vUp').value, vFlat=+$('vFlat').value, vDown=+$('vDown').value;
@@ -314,8 +323,8 @@ function computeTiming(){
     cumTime.push(cumTime[i-1]+ d/(v*1000/3600));
   }
   TOTAL_T=cumTime[cumTime.length-1];
-  const h=Math.floor(TOTAL_T/3600),m=Math.round((TOTAL_T%3600)/60);
-  $('eta').textContent='Estimé : '+h+'h'+String(m).padStart(2,'0')+', '+(TOTAL_D/1000/(TOTAL_T/3600)).toFixed(1).replace('.',',')+' km/h';
+  let totMin=Math.round(TOTAL_T/60); const h=Math.floor(totMin/60),m=totMin%60;
+  $('eta').textContent='Estimé : '+h+'h'+String(m).padStart(2,'0')+', vitesse moy : '+(TOTAL_D/1000/(TOTAL_T/3600)).toFixed(1).replace('.',',')+' km/h';
 }
 function stateAt(t){
   t=Math.max(0,Math.min(TOTAL_T,t));
@@ -343,7 +352,7 @@ function modelInfo(model){
 function finishWx(useArchive,days,note,model){
   weatherReady=true;
   const mi=modelInfo(model||(useArchive?'climato':'bestmatch'));
-  $('src').innerHTML='Source : Open-Meteo · modèle : <b title="'+mi.title.replace(/"/g,'&quot;')+'">'+mi.label+'</b>'+(note?' — '+note:'');
+  $('src').innerHTML='Modèle : <b title="'+mi.title.replace(/"/g,'&quot;')+'">'+mi.label+'</b>'+(note?' — '+note:'');
   const cf=confFromLead(days,useArchive);
   if(useArchive){ $('conf').innerHTML='<span title="hors plage de prévision">climato (proxy)</span>'; }
   else{
@@ -477,10 +486,32 @@ function paintAlerts(){
 // ---------- wind canvas ----------
 // ---------- light / dark theme (follows OS) ----------
 const MQ=window.matchMedia('(prefers-color-scheme: dark)');
-let DARK=MQ.matches, WINDCOL=DARK?'210,224,245':'34,52,82', tileLayer=null;
-function tileURL(){return 'https://{s}.basemaps.cartocdn.com/'+(DARK?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png';}
-function tileFilter(){ const tp=map&&map.getPane('tilePane'); if(tp) tp.style.filter=DARK?'brightness(2.2) sepia(0.55) hue-rotate(175deg) saturate(1.5)':'none'; const nl=$('nightlayer'); if(nl) nl.style.background='transparent'; }
-function applyTheme(){ DARK=MQ.matches; WINDCOL=DARK?'210,224,245':'34,52,82'; if(map&&tileLayer){ map.removeLayer(tileLayer); tileLayer=L.tileLayer(tileURL(),{maxZoom:19,subdomains:'abcd'}).addTo(map); tileLayer.bringToBack&&tileLayer.bringToBack(); tileFilter(); } if(started) drawProfile(); }
+let DARK=MQ.matches, WINDCOL=DARK?'210,224,245':'34,52,82', tileLayer=null, mapStyle='plan';
+try{ const ms=localStorage.getItem('gpxmap_mapstyle'); if(['plan','satellite','relief'].includes(ms)) mapStyle=ms; }catch(e){}
+updateWindCol();
+function tileURL(){
+  if(mapStyle==='satellite') return 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+  if(mapStyle==='relief') return 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+  return 'https://{s}.basemaps.cartocdn.com/'+(DARK?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png';
+}
+function tileOpts(){
+  if(mapStyle==='satellite') return {maxZoom:19};
+  if(mapStyle==='relief') return {maxZoom:17,subdomains:'abc'};
+  return {maxZoom:19,subdomains:'abcd'};
+}
+function tileFilter(){ const tp=map&&map.getPane('tilePane'); if(tp) tp.style.filter=(DARK&&mapStyle==='plan')?'brightness(2.2) sepia(0.55) hue-rotate(175deg) saturate(1.5)':'none'; const nl=$('nightlayer'); if(nl) nl.style.background='transparent'; }
+function swapTiles(){ if(map&&tileLayer){ map.removeLayer(tileLayer); tileLayer=L.tileLayer(tileURL(),tileOpts()).addTo(map); tileLayer.bringToBack&&tileLayer.bringToBack(); tileFilter(); } }
+// couleur des particules de vent selon le fond de carte (relief = clair, satellite = sombre)
+function updateWindCol(){ WINDCOL = mapStyle==='relief' ? '20,38,68' : mapStyle==='satellite' ? '235,242,252' : (DARK?'210,224,245':'34,52,82'); }
+function setBaseMap(style){ mapStyle=style; swapTiles(); updateWindCol(); $('mapstyle').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===style)); try{localStorage.setItem('gpxmap_mapstyle',style);}catch(e){} }
+// miniatures style Google Maps : une tuile réelle des Alpes (z=6) par fond de carte
+function updateMapThumbs(){ const ms=$('mapstyle'); if(!ms) return; const z=6,x=33,y=22;
+  const url={ plan:'https://a.basemaps.cartocdn.com/'+(DARK?'dark_all':'light_all')+'/'+z+'/'+x+'/'+y+'.png',
+    satellite:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/'+z+'/'+y+'/'+x,
+    relief:'https://a.tile.opentopomap.org/'+z+'/'+x+'/'+y+'.png' };
+  ms.querySelectorAll('button').forEach(b=>{ const t=b.querySelector('.thumb'); if(t) t.style.backgroundImage='url("'+url[b.dataset.m]+'")'; });
+}
+function applyTheme(){ DARK=MQ.matches; updateWindCol(); swapTiles(); updateMapThumbs(); if(started) drawProfile(); }
 MQ.addEventListener&&MQ.addEventListener('change',applyTheme);
 
 const cv=$('wind'), cx=cv.getContext('2d');
@@ -491,7 +522,8 @@ function drawWind(){
   cx.clearRect(0,0,cv.width,cv.height);
   const dir=(curWind.wd+180)*Math.PI/180, vx=Math.sin(dir), vy=-Math.cos(dir), spd=0.6+curWind.ws*0.14;
   cx.lineCap='round';
-  const base=Math.min(0.5,0.1+Math.min(1,curWind.ws/7)*0.34);
+  const boost=mapStyle==='relief'?1.7:mapStyle==='satellite'?1.3:1; // fonds chargés/contrastés : particules plus marquées
+  const base=Math.min(0.7,(0.1+Math.min(1,curWind.ws/7)*0.34)*boost);
   for(const p of particles){
     p.x+=vx*spd; p.y+=vy*spd; p.a-=0.008;
     if(p.x<-20||p.x>cv.width+20||p.y<-20||p.y>cv.height+20||p.a<=0){ p.x=Math.random()*cv.width;p.y=Math.random()*cv.height;p.a=1;p.trail.length=0; continue; }
@@ -508,7 +540,7 @@ function drawWind(){
 drawWind();
 
 // ---------- seek bar : morph between flat bar (0) and elevation profile (1) ----------
-let morph=0, morphAnim=null;
+let morph=1, morphAnim=null;
 function setMorph(target){
   if(morphAnim) cancelAnimationFrame(morphAnim);
   const t0=performance.now(), from=morph, dur=550;
@@ -521,20 +553,37 @@ function drawProfile(){
   const dpr=Math.min(2,window.devicePixelRatio||1);
   if(c.width!==Math.round(w*dpr))c.width=Math.round(w*dpr); if(c.height!==Math.round(h*dpr))c.height=Math.round(h*dpr);
   const ctx=c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+  const LB=Math.round(13*morph);   // bande basse réservée aux étiquettes km (en mode profil)
+  const H=h-LB;                    // hauteur de dessin du profil / de la barre
   let emin=1e9,emax=-1e9; for(const p of ROUTE){if(p[2]<emin)emin=p[2];if(p[2]>emax)emax=p[2];}
-  const er=(emax-emin)||1,pad=7, midY=h*0.56; // morph 0 = slim scrubber track
-  const X=d=>d/TOTAL_D*w, Yp=e=>h-pad-((e-emin)/er)*(h-2*pad), Y=e=>midY*(1-morph)+Yp(e)*morph;
+  const er=(emax-emin)||1,pad=7, midY=H*0.56; // morph 0 = slim scrubber track
+  const X=d=>d/TOTAL_D*w, Yp=e=>H-pad-((e-emin)/er)*(H-2*pad), Y=e=>midY*(1-morph)+Yp(e)*morph;
   const st=stateAt(simT), px=X(st.dist);
   const line=()=>{ctx.beginPath();for(let i=0;i<ROUTE.length;i++){const fn=i?'lineTo':'moveTo';ctx[fn](X(cum[i]),Y(ROUTE[i][2]));}};
   // profile area (fades in with morph)
   if(morph>0.01){
     ctx.globalAlpha=morph;
-    ctx.beginPath();ctx.moveTo(0,h);for(let i=0;i<ROUTE.length;i++)ctx.lineTo(X(cum[i]),Y(ROUTE[i][2]));ctx.lineTo(w,h);ctx.closePath();
+    ctx.beginPath();ctx.moveTo(0,H);for(let i=0;i<ROUTE.length;i++)ctx.lineTo(X(cum[i]),Y(ROUTE[i][2]));ctx.lineTo(w,H);ctx.closePath();
     ctx.fillStyle='#283039';ctx.fill();
-    ctx.save();ctx.beginPath();ctx.rect(0,0,px,h);ctx.clip();
-    ctx.beginPath();ctx.moveTo(0,h);for(let i=0;i<ROUTE.length;i++)ctx.lineTo(X(cum[i]),Y(ROUTE[i][2]));ctx.lineTo(w,h);ctx.closePath();
+    ctx.save();ctx.beginPath();ctx.rect(0,0,px,H);ctx.clip();
+    ctx.beginPath();ctx.moveTo(0,H);for(let i=0;i<ROUTE.length;i++)ctx.lineTo(X(cum[i]),Y(ROUTE[i][2]));ctx.lineTo(w,H);ctx.closePath();
     ctx.fillStyle='rgba(255,90,60,.85)';ctx.fill();ctx.restore();
     ctx.globalAlpha=1;
+  }
+  // distance markers (km) along the bottom band
+  if(LB){
+    const totalKm=TOTAL_D/1000, targetN=Math.max(2,Math.min(7,Math.round(w/80)));
+    const raw=totalKm/targetN, mag=Math.pow(10,Math.floor(Math.log10(raw||1))), norm=raw/mag;
+    const stepK=(norm<1.5?1:norm<3.5?2:norm<7.5?5:10)*mag, dec=stepK<1?1:0;
+    const marks=[]; for(let d=stepK; d<totalKm-stepK*0.35; d+=stepK) marks.push(d); marks.push(totalKm);
+    ctx.globalAlpha=morph; ctx.font='9px -apple-system,system-ui,sans-serif'; ctx.textBaseline='bottom';
+    marks.forEach((d,i)=>{ const xr=X(d*1000), last=i===marks.length-1;
+      ctx.fillStyle=DARK?'rgba(120,132,146,.6)':'rgba(150,160,172,.85)'; ctx.fillRect(xr-0.5,H,1,3);
+      ctx.fillStyle=DARK?'rgba(154,166,180,.95)':'rgba(91,99,109,.95)';
+      ctx.textAlign=last?'right':'center';
+      ctx.fillText(d.toFixed(dec)+(last?' km':''), Math.max(2,Math.min(w-2,xr)), h);
+    });
+    ctx.globalAlpha=1; ctx.textAlign='start'; ctx.textBaseline='alphabetic';
   }
   // track / ridge line : remaining grey, played accent (thick rounded scrubber at morph 0)
   ctx.lineCap='round'; ctx.lineJoin='round';
@@ -630,6 +679,7 @@ function render(){
   if(w){curWind={ws:w.ws,wd:w.wd};
     $('temp').textContent=Math.round(w.temp)+'°'; $('temp').style.color=tempColor(w.temp);
     $('wind-val').textContent=Math.round(w.ws)+' km/h';
+    $('wind-dir').textContent=windCard(w.wd);
     $('gust').textContent='rafales '+Math.round(w.gust)+' km/h';
     $('warrow').style.transform='rotate('+(w.wd+180)+'deg)';
     const sk=wmo(w.code,isDay); let skyTxt=sk[0]+' '+sk[1];
@@ -667,7 +717,7 @@ function startApp(parsed){
   if(!map){
     map=L.map('map',{zoomControl:false,attributionControl:false});
     L.control.zoom({position:'bottomright'}).addTo(map);
-    tileLayer=L.tileLayer(tileURL(),{maxZoom:19,subdomains:'abcd'}).addTo(map); tileFilter();
+    tileLayer=L.tileLayer(tileURL(),tileOpts()).addTo(map); tileFilter();
   }
   map.eachLayer(l=>{ if(!(l instanceof L.TileLayer)) map.removeLayer(l); });
   alertMarkers=[]; alertList=[];
@@ -707,16 +757,17 @@ document.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f && !
 // ---------- controls ----------
 $('play').onclick=()=>setPlaying(!playing);
 $('reset').onclick=()=>{simT=0;setPlaying(false);render();};
-$('apply').onclick=()=>{computeTiming();paintAlerts();simT=Math.min(simT,TOTAL_T);render();save();};
+function recalc(){ if(!started)return; computeTiming(); paintAlerts(); simT=Math.min(simT,TOTAL_T); render(); save(); }
 $('start').onchange=()=>{ if(started){loadWeather();render();save();} };
-['vUp','vFlat','vDown'].forEach(id=>$(id).addEventListener('change',save));
+['vUp','vFlat','vDown'].forEach(id=>$(id).addEventListener('change',recalc));
 // playback speed segmented control
-$('pbspeed').querySelectorAll('button').forEach(b=>b.onclick=()=>{
-  $('pbspeed').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on'); pbSec=+b.dataset.v; save();
-});
-// toggle flat bar <-> elevation profile (animated morph)
-$('viewtoggle').onclick=()=>{ profileMode=!profileMode; setMorph(profileMode?1:0); $('viewtoggle').classList.toggle('on',profileMode); };
+const PB_SPEEDS=[1,2,5];
+function setSpeed(mult){ pbSec=90/mult; $('pbspeed').textContent='x'+mult; $('pbspeed').dataset.mult=mult; save(); }
+$('pbspeed').onclick=()=>{ const cur=+($('pbspeed').dataset.mult||1), i=PB_SPEEDS.indexOf(cur); setSpeed(PB_SPEEDS[(i+1)%PB_SPEEDS.length]); };
+// fond de carte
+$('mapstyle').querySelectorAll('button').forEach(b=>b.onclick=()=>setBaseMap(b.dataset.m));
+$('mapstyle').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===mapStyle));
+updateMapThumbs();
 // profile scrubbing
 (function(){ const c=$('profile'); let drag=false;
   c.addEventListener('mousedown',e=>{drag=true;seekFromX(e.clientX);});
@@ -735,8 +786,7 @@ const TOUR=[
   {sel:'#sunarc',t:'Luminosité',x:"La course du soleil sur la journée : tu visualises le jour, la nuit et les transitions à l'heure simulée."},
   {sel:'#settings',t:'Réglages',x:"Choisis l'heure de départ et tes vitesses montée / plat / descente : elles pilotent la vitesse d'avancée de l'équipe."},
   {sel:'#play',t:'Lecture',x:"Lance la simulation. La barre Espace fait aussi play / pause."},
-  {sel:'#viewtoggle',t:'Barre ou profil',x:"Bascule entre une barre de lecture simple et le profil d'altitude de l'étape."},
-  {sel:'#pbspeed',t:'Vitesse de lecture',x:"Règle la rapidité du défilement : lent, moyen ou rapide."},
+  {sel:'#pbspeed',t:'Vitesse de lecture',x:"Clique pour changer la rapidité du défilement : x1, x2 ou x5."},
   {sel:'#map',t:'La carte',x:"Le point orange, c'est ton équipe. Les pastilles colorées signalent pluie, neige, orage, chaleur ou froid (survole-les). Les traits montrent le vent."},
   {sel:'#newgpx',t:'Autre parcours',x:"Charge un autre fichier GPX quand tu veux."}
 ];
@@ -754,7 +804,7 @@ function tourShow(i){
 function tourNext(){ tourI<TOUR.length-1?tourShow(tourI+1):tourEnd(); }
 function tourEnd(){ $('tour').classList.add('hidden'); try{localStorage.setItem('gpxmap_onboarded','1');}catch(e){} }
 function startTour(){ if(!started)return; $('tour').classList.remove('hidden'); tourShow(0); }
-$('tour-next').onclick=tourNext; $('tour-skip').onclick=tourEnd; $('replaytour').onclick=startTour;
+$('tour-next').onclick=tourNext; $('tour-skip').onclick=tourEnd;
 addEventListener('resize',()=>{ if(!$('tour').classList.contains('hidden')) tourShow(tourI); });
 
 // ---------- restore last session on load ----------
@@ -766,8 +816,7 @@ addEventListener('resize',()=>{ if(!$('tour').classList.contains('hidden')) tour
     if(o.settings){ const x=o.settings;
       if(x.start)$('start').value=x.start; if(x.vUp)$('vUp').value=x.vUp;
       if(x.vFlat)$('vFlat').value=x.vFlat; if(x.vDown)$('vDown').value=x.vDown;
-      pbSec=[180,90,20].includes(+x.pbSec)?+x.pbSec:90;
-      $('pbspeed').querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.v===pbSec)); }
+      const p=+x.pbSec; setSpeed(p<=30?5:p<=60?2:1); }
     if(o.route && o.route.length>1) startApp({route:o.route,name:o.name||'Parcours',restored:true});
   }catch(e){}
 })();
