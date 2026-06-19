@@ -335,9 +335,15 @@ function buildWP(){
 }
 function wxKey(){ return 'wx_'+ROUTE.length+'_'+$('start').value; }
 function applyWP(wparr){ WP.forEach((w,k)=>{ const s=wparr[k]||wparr[0]; w.hours=s.hours.map(h=>({t:new Date(h.t),temp:h.temp,ws:h.ws,gust:h.gust||0,wd:h.wd,code:h.code,precip:h.precip||0,pprob:h.pprob||0})); }); }
-function finishWx(useArchive,days,note){
+function modelInfo(model){
+  if(model==='meteofrance') return {label:'Météo-France AROME/ARPEGE',title:'Même chaîne de modèles que le site Météo-France (AROME 1,3 km sur les premières 48 h, puis ARPEGE). Utilisée car la course est à moins de 4 jours : les valeurs doivent coller à Météo-France.'};
+  if(model==='climato') return {label:'climatologie (l\'an dernier)',title:'Au-delà de 16 jours : valeurs observées l\'an dernier à la même date. Ce n\'est pas une vraie prévision, des écarts sont normaux.'};
+  return {label:'multi-modèles (ECMWF/GFS/ICON…)',title:'Mélange automatique des meilleurs modèles mondiaux (best match). Météo-France (AROME/ARPEGE) ne couvre pas cette échéance au-delà de ~4 jours, donc les valeurs peuvent différer du site Météo-France.'};
+}
+function finishWx(useArchive,days,note,model){
   weatherReady=true;
-  $('src').innerHTML='Source : Open-Meteo, '+(note||(useArchive?'valeurs de l\'an dernier (proxy, hors plage prévision 16 j)':'prévisions'));
+  const mi=modelInfo(model||(useArchive?'climato':'bestmatch'));
+  $('src').innerHTML='Source : Open-Meteo · modèle : <b title="'+mi.title.replace(/"/g,'&quot;')+'">'+mi.label+'</b>'+(note?' — '+note:'');
   const cf=confFromLead(days,useArchive);
   if(useArchive){ $('conf').innerHTML='<span title="hors plage de prévision">climato (proxy)</span>'; }
   else{
@@ -352,25 +358,47 @@ async function loadWeather(){
   const D0=new Date($('start').value); const days=(D0-new Date())/86400000;
   const key=wxKey();
   let cached=null; try{cached=JSON.parse(localStorage.getItem(key));}catch(e){}
-  if(cached && (Date.now()-cached.ts)<2*3600*1000){ applyWP(cached.wp); finishWx(cached.useArchive,days); return; }
+  if(cached && (Date.now()-cached.ts)<2*3600*1000){ applyWP(cached.wp); finishWx(cached.useArchive,days,null,cached.model); return; }
   let useArchive=false, base='https://api.open-meteo.com/v1/forecast', qStart=new Date(D0);
   if(days>15){useArchive=true; base='https://archive-api.open-meteo.com/v1/archive'; qStart.setFullYear(qStart.getFullYear()-1);}
   const qd0=fmtDate(qStart), qd1=fmtDate(new Date(qStart.getTime()+1*86400000));
   // ONE batched call for all waypoints (Open-Meteo accepts comma-separated coords)
   const lats=WP.map(w=>w.lat).join(','), lons=WP.map(w=>w.lon).join(',');
-  const u=base+'?latitude='+lats+'&longitude='+lons+'&hourly=temperature_2m,wind_speed_10m,wind_gusts_10m,wind_direction_10m,weather_code,precipitation,precipitation_probability&start_date='+qd0+'&end_date='+qd1+'&timezone=auto&wind_speed_unit=kmh';
-  try{
-    const j=await (await fetch(u)).json();
-    if(j && j.error) throw new Error(j.reason||'API');
+  const hourly='temperature_2m,wind_speed_10m,wind_gusts_10m,wind_direction_10m,weather_code,precipitation,precipitation_probability';
+  const baseQ='?latitude='+lats+'&longitude='+lons+'&hourly='+hourly+'&start_date='+qd0+'&end_date='+qd1+'&timezone=auto&wind_speed_unit=kmh';
+  // smart-switch : Météo-France (AROME/ARPEGE) si la course est à moins de 4 jours
+  // (mêmes modèles que le site Météo-France), sinon multi-modèles mondial (best match).
+  const tryMF = !useArchive && days<4;
+  function parse(j){
     const arr=Array.isArray(j)?j:[j];
-    WP.forEach((w,k)=>{ const o=arr[k]||arr[0], hr=o&&o.hourly; if(!hr) throw new Error('no data');
-      w.hours=hr.time.map((t,i)=>({t:new Date(t),temp:hr.temperature_2m[i],ws:hr.wind_speed_10m[i],gust:hr.wind_gusts_10m?hr.wind_gusts_10m[i]:0,wd:hr.wind_direction_10m[i],code:hr.weather_code?hr.weather_code[i]:0,precip:hr.precipitation?hr.precipitation[i]:0,pprob:hr.precipitation_probability?hr.precipitation_probability[i]:0}));
+    return WP.map((w,k)=>{ const o=arr[k]||arr[0], hr=o&&o.hourly; if(!hr) return null;
+      return hr.time.map((t,i)=>({t:new Date(t),temp:hr.temperature_2m[i],ws:hr.wind_speed_10m[i],gust:hr.wind_gusts_10m?hr.wind_gusts_10m[i]:0,wd:hr.wind_direction_10m[i],code:hr.weather_code?hr.weather_code[i]:0,precip:hr.precipitation?hr.precipitation[i]:0,pprob:hr.precipitation_probability?hr.precipitation_probability[i]:0}));
+    });
+  }
+  // données exploitables = au moins une température non nulle sur le 1er point
+  function hasData(p){ return p && p[0] && p[0].some(h=>h.temp!=null); }
+  try{
+    let parsed=null, model=useArchive?'climato':'bestmatch';
+    if(tryMF){
+      try{
+        const j=await (await fetch(base+baseQ+'&models=meteofrance_seamless')).json();
+        if(!(j&&j.error)){ const p=parse(j); if(hasData(p)){ parsed=p; model='meteofrance'; } }
+      }catch(e){/* fallback ci-dessous */}
+    }
+    if(!parsed){
+      const j=await (await fetch(base+baseQ)).json();
+      if(j && j.error) throw new Error(j.reason||'API');
+      parsed=parse(j);
+      if(!hasData(parsed)) throw new Error('no data');
+      model=useArchive?'climato':'bestmatch';
+    }
+    WP.forEach((w,k)=>{ w.hours=parsed[k]||parsed[0];
       if(useArchive) w.hours.forEach(h=>h.t.setFullYear(h.t.getFullYear()+1));
     });
-    try{ localStorage.setItem(key,JSON.stringify({ts:Date.now(),useArchive,wp:WP.map(w=>({hours:w.hours.map(h=>({t:h.t.toISOString(),temp:h.temp,ws:h.ws,gust:h.gust,wd:h.wd,code:h.code,precip:h.precip,pprob:h.pprob}))}))})); }catch(e){}
-    finishWx(useArchive,days);
+    try{ localStorage.setItem(key,JSON.stringify({ts:Date.now(),useArchive,model,wp:WP.map(w=>({hours:w.hours.map(h=>({t:h.t.toISOString(),temp:h.temp,ws:h.ws,gust:h.gust,wd:h.wd,code:h.code,precip:h.precip,pprob:h.pprob}))}))})); }catch(e){}
+    finishWx(useArchive,days,null,model);
   }catch(e){
-    if(cached){ applyWP(cached.wp); finishWx(cached.useArchive,days,'cache local (réseau/quota indisponible)'); }
+    if(cached){ applyWP(cached.wp); finishWx(cached.useArchive,days,'cache local (réseau/quota indisponible)',cached.model); }
     else $('src').innerHTML='⚠️ météo indisponible ('+e.message+'), quota API peut-être atteint, réessaie dans quelques minutes';
   }
 }
