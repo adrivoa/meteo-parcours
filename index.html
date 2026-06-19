@@ -308,6 +308,17 @@ function parseGPX(text){
 
 // ---------- globals set on load ----------
 let ROUTE,cum,TOTAL_D,cumTime,TOTAL_T,map,team,WP,tempMarkers=[],weatherReady=false,currentName='Parcours';
+let routeBounds=null,userMoved=false,fitLocked=false;
+// cadrage du tracé qui tient compte de la timeline (bas) et reste correct quelle que soit la largeur d'écran
+function fitRoute(){
+  if(!map||!routeBounds) return;
+  const ctrl=$('ctrl'), cr=(ctrl&&!ctrl.classList.contains('hidden'))?ctrl.getBoundingClientRect():null;
+  const H=map.getSize().y;
+  const bottom=Math.min(cr?(H-cr.top+34):64, H*0.45); // hauteur timeline + marge confortable
+  fitLocked=true;
+  map.fitBounds(routeBounds,{paddingTopLeft:[42,46],paddingBottomRight:[42,bottom],animate:false});
+  fitLocked=false;
+}
 const STORE='gpxmap_session_v1';
 function save(){ if(!started||!ROUTE)return; try{localStorage.setItem(STORE,JSON.stringify({route:ROUTE,name:currentName,settings:{start:$('start').value,vUp:$('vUp').value,vFlat:$('vFlat').value,vDown:$('vDown').value,pbSec:pbSec}}));}catch(e){} }
 function forget(){ try{localStorage.removeItem(STORE);}catch(e){} }
@@ -715,13 +726,15 @@ function startApp(parsed){
   }
 
   if(!map){
-    map=L.map('map',{zoomControl:false,attributionControl:false});
+    map=L.map('map',{zoomControl:false,attributionControl:false,zoomSnap:0});
     L.control.zoom({position:'bottomright'}).addTo(map);
     tileLayer=L.tileLayer(tileURL(),tileOpts()).addTo(map); tileFilter();
+    map.on('movestart zoomstart',()=>{ if(!fitLocked) userMoved=true; }); // l'utilisateur a pris la main
+    addEventListener('resize',()=>{ if(started && !userMoved) fitRoute(); }); // re-cadre tant qu'il n'a pas zoomé
   }
   map.eachLayer(l=>{ if(!(l instanceof L.TileLayer)) map.removeLayer(l); });
   alertMarkers=[]; alertList=[];
-  map.fitBounds(ROUTE.map(p=>[p[0],p[1]]));
+  routeBounds=ROUTE.map(p=>[p[0],p[1]]); userMoved=false;
   L.polyline(ROUTE.map(p=>[p[0],p[1]]),{color:'#ff5a3c',weight:3.5,opacity:.9}).addTo(map);
   L.circleMarker([ROUTE[0][0],ROUTE[0][1]],{radius:6,color:'#fff',fillColor:'#22c55e',fillOpacity:1,weight:2}).addTo(map).bindTooltip('Départ');
   L.circleMarker([ROUTE.at(-1)[0],ROUTE.at(-1)[1]],{radius:6,color:'#fff',fillColor:'#ef4444',fillOpacity:1,weight:2}).addTo(map).bindTooltip('Arrivée');
@@ -729,10 +742,14 @@ function startApp(parsed){
     .bindTooltip('',{permanent:true,direction:'right',offset:[12,0],className:'team-tip'});
 
   simT=0; setPlaying(false); started=true;
-  buildWP(); computeTiming(); loadWeather(); render();
+  buildWP(); computeTiming(); loadWeather();
+  // afficher les panneaux PUIS recadrer une seule fois avec la bonne taille (évite le double cadrage / dézoom au refresh)
   $('drop').classList.add('hidden');
   ['hud','settings','ctrl','settingsbtn'].forEach(id=>$(id).classList.remove('hidden'));
-  setTimeout(()=>{map.invalidateSize();render();},220);
+  map.invalidateSize(); fitRoute(); render();
+  // 2e cadrage sur la frame suivante : la 1re mesure de taille peut être incomplète au tout premier rendu.
+  // Mêmes paramètres (panneaux déjà visibles) donc aucun glitch.
+  requestAnimationFrame(()=>{ if(started){ map.invalidateSize(); if(!userMoved) fitRoute(); } });
   try{ if(!localStorage.getItem('gpxmap_onboarded')) setTimeout(startTour,750); }catch(e){}
   save();
 }
